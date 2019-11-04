@@ -1,0 +1,9 @@
+{
+  "name": "pug-bulma",
+  "version": "0.0.0",
+  "description": "Bulma mixins for Pug",
+  "main": "_bulma.pug",
+  "repository": "https://github.com/waspeer/pug-bulma.git",
+  "author": "Wannes Salomé <mail@wannessalome.nl>",
+  "license": "gpl-3.0"
+}
