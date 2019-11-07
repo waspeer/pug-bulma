@@ -5,5 +5,15 @@
   "main": "_bulma.pug",
   "repository": "https://github.com/waspeer/pug-bulma.git",
   "author": "Wannes Salomé <mail@wannessalome.nl>",
-  "license": "gpl-3.0"
+  "license": "gpl-3.0",
+  "scripts": {
+    "dev:test-watch": "ava --watch",
+    "dev": "run-p dev:*"
+  },
+  "dependencies": {
+    "ava": "^2.4.0",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^14.1.1",
+    "pug": "^2.0.4"
+  }
 }
