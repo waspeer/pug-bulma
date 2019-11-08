@@ -1,86 +1,146 @@
-import * as pugjs from "pug";
+"use strict";
+
+import pug from "pug";
 import { resolve } from "path";
 import test from "ava";
 
 /*
- * PUG TAGGED TEMPLATE FUNCTION
+ * NORMALIZERS
  */
 
-export let renderPug = pugString =>
-  pugjs.render(pugString, {
-    basedir: resolve("./src/")
-  });
-
-function removeExtraTabs(string) {
+// remove excess tabs from pug string created as a multiline string
+function normalizePugString(string) {
+  if (!string.length) return "";
   let lines = string.split("\n");
   const firstLineIndex = lines[0] === "" ? 1 : 0;
   const tabLength = lines[firstLineIndex].match(/^[\t\s]*/g)[0].length;
   return lines
     .map(line => (line.length < tabLength ? line : line.slice(tabLength)))
-    .join("\n");
+    .join("\n")
+    .trim();
 }
 
-export let pug = (strings, ...vars) => {
-  const pugString = strings.reduce(
-    (pugString, string, i) => pugString + string + (vars[i] ? vars[i] : ""),
-    ""
+// normalize html string so html rendered by pug and expected html string
+// can be compared
+function normalizeHtmlString(htmlString) {
+  let newHtmlString = htmlString;
+
+  // sort class attribute
+  newHtmlString = newHtmlString.replace(
+    /class="([^"]*)"/,
+    (match, classList) => {
+      classList = classList.split(" ");
+      const newClassList = classList.sort().join(" ");
+      return `class="${newClassList}"`;
+    }
   );
 
-  return renderPug(removeExtraTabs(pugString).trim());
-};
+  return newHtmlString;
+}
 
 /*
- * COMMON TESTS
+ * RENDERERS
  */
 
-export function commonTests({ name, mixinPath, types }) {
-  types.forEach(typeInfo => {
-    let { type, mixinAttributes, expectedTpl } = typeInfo;
-    const descriptor = (type === "" ? "" : type + " ") + name;
-    const tmplPlaceholder = "{{BLOCK}}";
-    mixinAttributes = mixinAttributes
+// creates a pug renderer that renders the mixin type that is tested with
+// the specified classes and content
+function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
+  return function(classes, block) {
+    let mixinAttributes = {};
+    if (mixinTypeAttributes)
+      Object.assign(mixinAttributes, mixinTypeAttributes);
+    if (classes) mixinAttributes.class = classes;
+    const mixinAttributesString = Object.getOwnPropertyNames(mixinAttributes)
+      .length
       ? `&attributes(${JSON.stringify(mixinAttributes)})`
       : "";
-    console.log(mixinAttributes);
 
-    // TEST WITHOUT CONTENT
-    test(`empty ${descriptor}`, t => {
-      const actual = pug`
-        include ${mixinPath}
-        +${name}()()${mixinAttributes}
-      `;
-      const expected = expectedTpl.replace(tmplPlaceholder, "");
-      t.is(actual, expected);
+    const blockLines = block
+      ? normalizePugString(block)
+          .split("\n")
+          .map(line => "\t" + line)
+      : [];
+
+    const pugString = [
+      `include ${mixinPath}`,
+      `+${mixinName}${mixinAttributesString}`
+    ]
+      .concat(blockLines)
+      .join("\n");
+
+    const htmlString = pug.render(pugString, {
+      basedir: resolve("./src/")
     });
 
-    // TEST WITH CONTENT
-    test(`${descriptor} with content`, t => {
-      const actual = pug`
-        include ${mixinPath}
-        +${name}()()${mixinAttributes}
-          h1 Hello World
-          h2 Foo Bar
-      `;
-      const content = "<h1>Hello World</h1><h2>Foo Bar</h2>";
-      const expected = expectedTpl.replace(tmplPlaceholder, content);
-      t.is(actual, expected);
-    });
+    return normalizeHtmlString(htmlString);
+  };
+}
 
-    // TEST WITH CUSTOM CLASSNAMES
-    test(`${descriptor} with custom classes`, t => {
-      const customClasses = ["custom", "classNames"];
-      const actual = pug`
-        include ${mixinPath}
-        +${name}()(class=${JSON.stringify(customClasses)})${mixinAttributes}
-      `;
-      const expected = expectedTpl
-        .replace(/class="(.*)"/, (match, classList) => {
-          classList = classList.split(" ");
-          const newClassList = classList.concat(customClasses).join(" ");
-          return `class="${newClassList}"`;
-        })
-        .replace(tmplPlaceholder, "");
-      t.is(actual, expected);
+// creates a renderer that modifies the template string of the type that is
+// tested with the specified classes and content
+function createExpectedRenderer(expectedTpl) {
+  const tmplPlaceholder = "{{BLOCK}}";
+
+  return function(classes = [], block = "") {
+    let htmlString = expectedTpl
+      .replace(/class="([^"]*)"/, (match, classList) => {
+        const newClassList = classList
+          .split("\n")
+          .concat(classes)
+          .join(" ");
+        return `class="${newClassList}"`;
+      })
+      .replace(tmplPlaceholder, block);
+
+    return normalizeHtmlString(htmlString);
+  };
+}
+
+/*
+ * TEST WRAPPER
+ */
+
+// wrapper that takes a function with arguments: descriptor (the descriptor of
+// the type tested, eg generic box) and setup (a function that can be called
+// at the beginning of every test which returns an object with methods to modify
+// the classes and content of the html generated).
+// it returns a function that runs the tests when it is provided with information
+// about the specific type tested.
+export function testWrapper(tests) {
+  return function({ name, mixinPath, types }) {
+    types.forEach(typeInfo => {
+      let { type = "", mixinAttributes, expectedTpl } = typeInfo;
+      const descriptor = (type === "" ? "" : type + " ") + name;
+      const setup = () => {
+        let classes = [];
+        let block = {
+          pug: "",
+          html: ""
+        };
+        const actualRenderer = createActualRenderer(
+          name,
+          mixinPath,
+          mixinAttributes
+        );
+        const expectedRenderer = createExpectedRenderer(expectedTpl);
+        const renderStrategy = (classes = [], block = "") => {
+          return {
+            actual: actualRenderer(classes, block.pug),
+            expected: expectedRenderer(classes, block.html)
+          };
+        };
+        return {
+          addClass: (...newClasses) => {
+            classes = classes.concat(newClasses);
+          },
+          setBlock: newBlock => {
+            Object.assign(block, newBlock);
+          },
+          render: () => renderStrategy(classes, block)
+        };
+      };
+
+      tests(descriptor, setup);
     });
-  });
+  };
 }

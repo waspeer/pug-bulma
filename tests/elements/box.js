@@ -1,5 +1,4 @@
-import test from "ava";
-import { commonTests } from "../_utils";
+import commonTests from "../_commonTests";
 
 commonTests({
   name: "box",

@@ -1,5 +1,4 @@
-import test from "ava";
-import { commonTests } from "../_utils";
+import commonTests from "../_commonTests";
 
 commonTests({
   name: "container",
@@ -10,7 +9,7 @@ commonTests({
       expectedTpl: '<div class="container">{{BLOCK}}</div>'
     },
     {
-      type: "fuid",
+      type: "fluid",
       mixinAttributes: { fluid: true },
       expectedTpl: '<div class="container is-fluid">{{BLOCK}}</div>'
     }
