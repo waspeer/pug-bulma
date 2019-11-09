@@ -42,16 +42,43 @@ function normalizeHtmlString(htmlString) {
  * RENDERERS
  */
 
+function createHtmlRenderer(renderStrategy) {
+  let properties = {
+    classes: [],
+    block: ""
+  };
+  return {
+    addClass: (...newClasses) => {
+      properties.classes = properties.classes.concat(newClasses);
+    },
+    setBlock: newBlock => {
+      properties.block = newBlock;
+    },
+    set: (property, value) => {
+      properties[property] = value;
+    },
+    render: () => renderStrategy(properties)
+  };
+}
+
 // creates a pug renderer that renders the mixin type that is tested with
 // the specified classes and content
 function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
-  return function(classes, block) {
+  const renderStrategy = properties => {
+    const { classes, block } = properties;
+    const extraProperties = Object.keys(properties)
+      .filter(property => property !== "classes" || property !== "block")
+      .reduce((acc, property) => {
+        acc[property] = properties[property];
+        return acc;
+      }, {});
+
     let mixinAttributes = {};
     if (mixinTypeAttributes)
       Object.assign(mixinAttributes, mixinTypeAttributes);
-    if (classes) mixinAttributes.class = classes;
-    const mixinAttributesString = Object.getOwnPropertyNames(mixinAttributes)
-      .length
+    if (classes && classes.length) mixinAttributes.class = classes;
+    if (extraProperties) Object.assign(mixinAttributes, extraProperties);
+    const mixinAttributesString = Object.keys(mixinAttributes).length
       ? `&attributes(${JSON.stringify(mixinAttributes)})`
       : "";
 
@@ -74,6 +101,8 @@ function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
 
     return normalizeHtmlString(htmlString);
   };
+
+  return createHtmlRenderer(renderStrategy);
 }
 
 // creates a renderer that modifies the template string of the type that is
@@ -81,7 +110,7 @@ function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
 function createExpectedRenderer(expectedTpl) {
   const tmplPlaceholder = "{{BLOCK}}";
 
-  return function(classes = [], block = "") {
+  const renderStrategy = ({ classes = [], block = "" }) => {
     let htmlString = expectedTpl
       .replace(/class="([^"]*)"/, (match, classList) => {
         const newClassList = classList
@@ -94,6 +123,8 @@ function createExpectedRenderer(expectedTpl) {
 
     return normalizeHtmlString(htmlString);
   };
+
+  return createHtmlRenderer(renderStrategy);
 }
 
 /*
@@ -112,31 +143,26 @@ export function testWrapper(tests) {
       let { type = "", mixinAttributes, expectedTpl } = typeInfo;
       const descriptor = (type === "" ? "" : type + " ") + name;
       const setup = () => {
-        let classes = [];
-        let block = {
-          pug: "",
-          html: ""
-        };
-        const actualRenderer = createActualRenderer(
-          name,
-          mixinPath,
-          mixinAttributes
-        );
-        const expectedRenderer = createExpectedRenderer(expectedTpl);
+        const actual = createActualRenderer(name, mixinPath, mixinAttributes);
+        const expected = createExpectedRenderer(expectedTpl);
         const renderStrategy = (classes = [], block = "") => {
           return {
-            actual: actualRenderer(classes, block.pug),
-            expected: expectedRenderer(classes, block.html)
+            actual: actual.render(),
+            expected: expected.render()
           };
         };
         return {
-          addClass: (...newClasses) => {
-            classes = classes.concat(newClasses);
+          addClass: (...classes) => {
+            actual.addClass(...classes);
+            expected.addClass(...classes);
           },
-          setBlock: newBlock => {
-            Object.assign(block, newBlock);
+          setBlock: block => {
+            actual.setBlock(block.pug);
+            expected.setBlock(block.html);
           },
-          render: () => renderStrategy(classes, block)
+          render: () => renderStrategy(),
+          actual,
+          expected
         };
       };
 
