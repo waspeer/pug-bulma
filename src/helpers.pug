@@ -1,0 +1,48 @@
+-
+  const COLORS = "colors";
+  const SIZES = "sizes";
+  
+  const sharedModifierMaps = {};
+  sharedModifierMaps[COLORS] = {
+    white: "is-white",
+    black: "is-black",
+    light: "is-light",
+    dark: "is-dark",
+    primary: "is-primary",
+    link: "is-link",
+    info: "is-info",
+    success: "is-success",
+    warning: "is-warning",
+    danger: "is-danger",
+    text: "is-text"
+  };
+  sharedModifierMaps[SIZES] = {
+    small: "is-small",
+    normal: "is-normal",
+    medium: "is-medium",
+    large: "is-large"
+  };
+  
+  function supportModifiers(attributes, modifiers) {
+    attributes.class = attributes.class ? attributes.class : [];
+    modifiers.forEach(modifier => {
+      let modifierMap;
+      if(typeof modifier === "string" && sharedModifierMaps[modifier] !== "undefined") {
+        modifierMap = sharedModifierMaps[modifier];
+      } else {
+        modifierMap = modifier;
+      }
+
+      if(modifierMap) {
+        let supportedModifiers = Object.keys(modifierMap);
+        Object.keys(attributes).forEach(attribute => {
+          if(supportedModifiers.includes(attribute)) {
+            attributes.class = attributes.class.concat(modifierMap[attribute]);
+            delete attributes[attribute];
+          }
+        })
+      }
+
+    })
+    return attributes;
+  }

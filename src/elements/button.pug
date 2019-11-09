@@ -1,2 +1,37 @@
+include ../helpers
+
+-
+  buttonModifierMap = {
+    // DISPLAYS
+    fullwidth: "is-fullwidth",
+    
+    // STYLES
+    outlined: "is-outlined",
+    inverted: "is-inverted",
+    rounded: "is-rounded",
+    
+    // STATES
+    hovered: "is-hovered",
+    focused: "is-focused",
+    active: "is-active",
+    loading: "is-loading",
+    static: "is-static"
+  }
+
+mixin buttonBase(type="button")
+  case type
+    when "a"
+      a&attributes(attributes)
+        block
+    when "submit"
+      input(type="submit")&attributes(attributes)
+    when "reset"
+      input(type="reset")&attributes(attributes)
+    default
+      button&attributes(attributes)
+        block
+  
 mixin button
-  .button(class!=attributes.class)
+  - attributes = supportModifiers(attributes, [COLORS, SIZES, buttonModifierMap]);
+  +buttonBase(attributes.type).button(class!=attributes.class disabled=!!attributes.disabled)
+    block
