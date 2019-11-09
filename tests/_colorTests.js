@@ -11,7 +11,8 @@ const colorMap = {
   info: "is-info",
   success: "is-success",
   warning: "is-warning",
-  danger: "is-danger"
+  danger: "is-danger",
+  text: "is-text"
 };
 
 const colorTests = testWrapper((descriptor, setup) => {
@@ -19,7 +20,7 @@ const colorTests = testWrapper((descriptor, setup) => {
   test(`individual colors on ${descriptor}`, t => {
     Object.keys(colorMap).forEach(color => {
       const { actual, expected } = setup();
-      actual.set(color, true);
+      actual.setAttribute(color, true);
       expected.addClass(colorMap[color]);
       t.is(
         actual.render(),
@@ -34,7 +35,7 @@ const colorTests = testWrapper((descriptor, setup) => {
     const { actual, expected } = setup();
     const colors = Object.keys(colorMap).slice(-3);
     colors.forEach(color => {
-      actual.set(color, true);
+      actual.setAttribute(color, true);
       expected.addClass(colorMap[color]);
     });
     t.is(actual.render(), expected.render());

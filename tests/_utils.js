@@ -25,15 +25,20 @@ function normalizePugString(string) {
 function normalizeHtmlString(htmlString) {
   let newHtmlString = htmlString;
 
-  // sort class attribute
-  newHtmlString = newHtmlString.replace(
-    /class="([^"]*)"/,
-    (match, classList) => {
+  newHtmlString = newHtmlString
+    // sort class attribute
+    .replace(/class="([^"]*)"/, (match, classList) => {
       classList = classList.split(" ");
       const newClassList = classList.sort().join(" ");
       return `class="${newClassList}"`;
-    }
-  );
+    })
+    // sort attributes
+    .replace(/(\s\w*(?:="[^"]*")?)+/, attributes => {
+      const unsortedAttributes = htmlString.match(/(\s\w*(?:="[^"]*")?)/g);
+      return unsortedAttributes === null
+        ? attributes
+        : unsortedAttributes.sort().join("");
+    });
 
   return newHtmlString;
 }
@@ -42,10 +47,12 @@ function normalizeHtmlString(htmlString) {
  * RENDERERS
  */
 
+// abstract html renderer
 function createHtmlRenderer(renderStrategy) {
   let properties = {
     classes: [],
-    block: ""
+    block: "",
+    attributes: {}
   };
   return {
     addClass: (...newClasses) => {
@@ -54,8 +61,8 @@ function createHtmlRenderer(renderStrategy) {
     setBlock: newBlock => {
       properties.block = newBlock;
     },
-    set: (property, value) => {
-      properties[property] = value;
+    setAttribute: (attribute, value) => {
+      properties.attributes[attribute] = value;
     },
     render: () => renderStrategy(properties)
   };
@@ -65,19 +72,14 @@ function createHtmlRenderer(renderStrategy) {
 // the specified classes and content
 function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
   const renderStrategy = properties => {
-    const { classes, block } = properties;
-    const extraProperties = Object.keys(properties)
-      .filter(property => !(property == "classes" || property == "block"))
-      .reduce((acc, property) => {
-        acc[property] = properties[property];
-        return acc;
-      }, {});
+    const { classes, block, attributes } = properties;
 
     let mixinAttributes = {};
     if (mixinTypeAttributes)
       Object.assign(mixinAttributes, mixinTypeAttributes);
     if (classes && classes.length) mixinAttributes.class = classes;
-    if (extraProperties) Object.assign(mixinAttributes, extraProperties);
+    if (Object.keys(attributes).length)
+      Object.assign(mixinAttributes, attributes);
     const mixinAttributesString = Object.keys(mixinAttributes).length
       ? `&attributes(${JSON.stringify(mixinAttributes)})`
       : "";
@@ -108,9 +110,24 @@ function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
 // creates a renderer that modifies the template string of the type that is
 // tested with the specified classes and content
 function createExpectedRenderer(expectedTpl) {
-  const tmplPlaceholder = "{{BLOCK}}";
+  const BLOCK_PLACEHOLDER = "{{BLOCK}}";
+  const ATTRIBUTES_PLACEHOLDER = "{{ATTRIBUTES}}";
 
-  const renderStrategy = ({ classes = [], block = "" }) => {
+  const renderStrategy = properties => {
+    const { classes, block, attributes } = properties;
+
+    let attributesString = Object.keys(attributes)
+      .map(attribute => {
+        const attributeValue = attributes[attribute];
+        if (attributeValue === false) return false;
+        return (
+          attribute +
+          (attributeValue === true ? `="${attribute}"` : `="${attributeValue}"`)
+        );
+      })
+      .filter(attributeString => attributeString !== false)
+      .join(" ");
+
     let htmlString = expectedTpl
       .replace(/class="([^"]*)"/, (match, classList) => {
         const newClassList = classList
@@ -119,7 +136,11 @@ function createExpectedRenderer(expectedTpl) {
           .join(" ");
         return `class="${newClassList}"`;
       })
-      .replace(tmplPlaceholder, block);
+      .replace(BLOCK_PLACEHOLDER, block)
+      .replace(
+        ATTRIBUTES_PLACEHOLDER,
+        attributesString.length ? " " + attributesString : ""
+      );
 
     return normalizeHtmlString(htmlString);
   };
@@ -159,6 +180,10 @@ export function testWrapper(tests) {
           setBlock: block => {
             actual.setBlock(block.pug);
             expected.setBlock(block.html);
+          },
+          setAttribute: (attribute, value) => {
+            actual.setAttribute(attribute, value);
+            expected.setAttribute(attribute, value);
           },
           render: () => renderStrategy(),
           actual,

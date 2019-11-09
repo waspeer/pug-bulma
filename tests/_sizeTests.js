@@ -13,7 +13,7 @@ const sizeTests = testWrapper((descriptor, setup) => {
   test(`individual sizes on ${descriptor}`, t => {
     Object.keys(sizeMap).forEach(size => {
       const { actual, expected } = setup();
-      actual.set(size, true);
+      actual.setAttribute(size, true);
       expected.addClass(sizeMap[size]);
       t.is(
         actual.render(),
