@@ -67,7 +67,7 @@ function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
   const renderStrategy = properties => {
     const { classes, block } = properties;
     const extraProperties = Object.keys(properties)
-      .filter(property => property !== "classes" || property !== "block")
+      .filter(property => !(property == "classes" || property == "block"))
       .reduce((acc, property) => {
         acc[property] = properties[property];
         return acc;
