@@ -1,0 +1,25 @@
+- 
+  // TODO
+  // support different element types
+
+include ../helpers
+
+-
+  const buttonsModifierMap = {
+    // SIZES
+    small: "are-small",
+    medium: "are-medium",
+    large: "are-large",
+    
+    // GENERAL
+    addons: "has-addons",
+    
+    // ALIGNMENT
+    centered: "is-centered",
+    right: "is-right"
+  };
+
+mixin buttons
+  - attributes = supportModifiers(attributes, [buttonsModifierMap]);
+  .buttons(class!=attributes.class)
+    block
