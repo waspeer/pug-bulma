@@ -1,5 +1,5 @@
 import test from 'ava';
-import { testWrapper } from './_utils';
+import { createTestWrapper } from './_utils';
 
 /*
  * COMMON TESTS
@@ -10,7 +10,7 @@ import { testWrapper } from './_utils';
 // - a render with content
 // - a render with added classes
 
-const commonTests = testWrapper((descriptor, setup) => {
+const commonTests = createTestWrapper((descriptor, setup) => {
   // WITHOUT CONTENT
   test(`empty ${descriptor}`, (t) => {
     const { render } = setup();
@@ -20,7 +20,7 @@ const commonTests = testWrapper((descriptor, setup) => {
 
   // WITH CONTENT
   test(`${descriptor} with content`, (t) => {
-    const { actual, expected, render } = setup();
+    const { actual, expected } = setup();
     actual.setBlock(`
       h1 Hello World
       h2 Foo Bar

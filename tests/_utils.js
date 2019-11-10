@@ -1,6 +1,5 @@
 import pug from 'pug';
 import { resolve } from 'path';
-import test from 'ava';
 
 /*
  * NORMALIZERS
@@ -13,7 +12,9 @@ function normalizePugString(string) {
   const firstLineIndex = lines[0] === '' ? 1 : 0;
   const tabLength = lines[firstLineIndex].match(/^[\t\s]*/g)[0].length;
   return lines
-    .map((line) => (line.length < tabLength ? line : line.slice(tabLength)))
+    .map((line) => {
+      return line.length < tabLength ? line : line.slice(tabLength);
+    })
     .join('\n')
     .trim();
 }
@@ -26,8 +27,7 @@ function normalizeHtmlString(htmlString) {
   newHtmlString = newHtmlString
     // sort class attribute
     .replace(/class="([^"]*)"/, (match, classList) => {
-      classList = classList.split(' ');
-      const newClassList = classList.sort().join(' ');
+      const newClassList = classList.split(' ').sort().join(' ');
       return `class="${newClassList}"`;
     })
     // sort attributes
@@ -143,18 +143,14 @@ function createExpectedRenderer(expectedTpl) {
 // the classes and content of the html generated).
 // it returns a function that runs the tests when it is provided with information
 // about the specific type tested.
-export function testWrapper(tests) {
-  return function ({ name, mixinPath, types }) {
+export function createTestWrapper(tests) {
+  return function testWrapper({ name, mixinPath, types }) {
     types.forEach((typeInfo) => {
       const { type = '', mixinAttributes, expectedTpl } = typeInfo;
       const descriptor = (type === '' ? '' : `${type} `) + name;
       const setup = () => {
         const actual = createActualRenderer(name, mixinPath, mixinAttributes);
         const expected = createExpectedRenderer(expectedTpl);
-        const renderStrategy = (classes = [], block = '') => ({
-          actual: actual.render(),
-          expected: expected.render(),
-        });
         return {
           addClass: (...classes) => {
             actual.addClass(...classes);
@@ -168,7 +164,10 @@ export function testWrapper(tests) {
             actual.setAttribute(attribute, value);
             expected.setAttribute(attribute, value);
           },
-          render: () => renderStrategy(),
+          render: () => () => {
+            actual: actual.render(),
+            expected: expected.render(),
+          },
           actual,
           expected,
         };

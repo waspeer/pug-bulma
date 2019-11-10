@@ -1,5 +1,5 @@
 import test from 'ava';
-import { testWrapper } from './_utils';
+import { createTestWrapper } from './_utils';
 
 const colorMap = {
   white: 'is-white',
@@ -15,7 +15,7 @@ const colorMap = {
   text: 'is-text',
 };
 
-const colorTests = testWrapper((descriptor, setup) => {
+const colorTests = createTestWrapper((descriptor, setup) => {
   // INDIVIDUAL COLORS
   test(`individual colors on ${descriptor}`, (t) => {
     Object.keys(colorMap).forEach((color) => {

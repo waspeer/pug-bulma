@@ -1,5 +1,5 @@
 import test from 'ava';
-import { testWrapper } from './_utils';
+import { createTestWrapper } from './_utils';
 
 const sizeMap = {
   small: 'is-small',
@@ -8,7 +8,7 @@ const sizeMap = {
   large: 'is-large',
 };
 
-const sizeTests = testWrapper((descriptor, setup) => {
+const sizeTests = createTestWrapper((descriptor, setup) => {
   // INDIVIDUAL SIZES
   test(`individual sizes on ${descriptor}`, (t) => {
     Object.keys(sizeMap).forEach((size) => {
