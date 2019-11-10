@@ -1,4 +1,12 @@
 -
+  /*
+   * MODIFIERS
+   */
+   
+  // These modifiers map a mixin attribute to a classname.
+  // modifierMaps that are shared among mixins are defined here. Custom maps
+  // can be defined as well.
+  
   const COLORS = "colors";
   const SIZES = "sizes";
   
@@ -45,4 +53,31 @@
 
     })
     return attributes;
+  }
+  
+  /*
+   * ATTRIBUTES HELPER
+   */
+  
+  // Extract attributes from the attributes object of the mixin. This can be
+  // used when attributes modify something specific in the mixin but should
+  // not remain on the object to potentially end up as a html attribute.
+  
+  function extractAttributes(attributes, attributeMap) {
+    if (Array.isArray(attributeMap)) attributeMap = { default: attributeMap };
+    
+    Object.keys(attributeMap).forEach(context => {
+      const attributeNames = attributeMap[context];
+      attributeMap[context] = attributeNames.reduce((acc, attributeName) => {
+        if(attributes[attributeName])
+          acc[attributeName] = attributes[attributeName];
+        delete attributes[attributeName];
+        return acc;
+      }, {});
+    });
+    
+    if (attributeMap.default && Object.keys(attributeMap).length === 1)
+      attributeMap = attributeMap.default;
+    
+    return attributeMap;
   }
