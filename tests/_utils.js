@@ -34,7 +34,9 @@ function normalizeHtmlString(htmlString) {
     })
     // sort attributes
     .replace(/(\s\w*(?:="[^"]*")?)+/, attributes => {
-      const unsortedAttributes = htmlString.match(/(\s\w*(?:="[^"]*")?)/g);
+      const unsortedAttributes = htmlString
+        .match(/<([^>]*)>/)[0]
+        .match(/(\s\w*(?:="[^"]*")?)/g);
       return unsortedAttributes === null
         ? attributes
         : unsortedAttributes.sort().join("");
