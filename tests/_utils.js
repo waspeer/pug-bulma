@@ -164,9 +164,11 @@ export function createTestWrapper(tests) {
             actual.setAttribute(attribute, value);
             expected.setAttribute(attribute, value);
           },
-          render: () => () => {
-            actual: actual.render(),
-            expected: expected.render(),
+          render: () => {
+            return {
+              actual: actual.render(),
+              expected: expected.render(),
+            }
           },
           actual,
           expected,
