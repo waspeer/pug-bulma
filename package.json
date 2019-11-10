@@ -5,11 +5,11 @@
   "main": "_bulma.pug",
   "repository": "https://github.com/waspeer/pug-bulma.git",
   "author": "Wannes Salomé <mail@wannessalome.nl>",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "scripts": {
     "dev:test-watch": "ava --watch",
     "dev": "run-p dev:*",
-    "coverage": "nyc ava"
+    "test": "ava"
   },
   "dependencies": {
     "ava": "^2.4.0",
