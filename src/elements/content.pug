@@ -1,0 +1,6 @@
+include ../helpers
+
+mixin content
+  - attributes = supportModifiers(attributes, [SIZES]);
+  .content(class!=attributes.class)
+    block
