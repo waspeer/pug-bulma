@@ -36,5 +36,6 @@ mixin buttonBase(type="button")
   
 mixin button
   - attributes = supportModifiers(attributes, [COLORS, SIZES, buttonModifierMap]);
-  +buttonBase(attributes.type).button(class!=attributes.class disabled=!!attributes.disabled)
+  - properties = extractAttributes(attributes, ["type"]);
+  +buttonBase(properties.type).button&attributes(attributes)
     block

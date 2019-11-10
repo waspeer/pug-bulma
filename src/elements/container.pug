@@ -1,3 +1,11 @@
+include ../helpers
+
+-
+  const containerModifierMap = {
+    fluid: "is-fluid"
+  }
+
 mixin container()
-  .container(class=(attributes.fluid ? "is-fluid" : "") class!=attributes.class)
+  - attributes = supportModifiers(attributes, [containerModifierMap]);
+  .container&attributes(attributes)
     block

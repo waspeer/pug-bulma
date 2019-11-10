@@ -6,7 +6,7 @@ mixin iconImplementation
 mixin icon
   - attributes = supportModifiers(attributes, [SIZES]);
   - iconAttributes = extractAttributes(attributes, ["iconType", "iconClass"]);
-  span.icon(class!=attributes.class)
+  span.icon&attributes(attributes)
     if block
       block
     else if iconAttributes.iconClass
