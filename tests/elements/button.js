@@ -51,7 +51,10 @@ const buttonModifierMap = {
   focused: "is-focused",
   active: "is-active",
   loading: "is-loading",
-  static: "is-static"
+  static: "is-static",
+
+  // GROUPING
+  selected: "is-selected"
 };
 
 commonTests(buttonContext);
