@@ -40,7 +40,7 @@ $ git clone https://github.com/waspeer/pug-bulma.git
 
 All modifiers are set as attributes. This keeps the intention clear, since attributes are named.
 
-Right now this package is still developed. The documentation will be updated to contain more examples.
+Right now this package is still developed as is the [documentation](/docs/).
 
 ## License
 MIT © Wannes Salomé
