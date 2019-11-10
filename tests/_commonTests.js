@@ -1,5 +1,5 @@
-import { testWrapper } from "./_utils";
-import test from "ava";
+import test from 'ava';
+import { testWrapper } from './_utils';
 
 /*
  * COMMON TESTS
@@ -12,27 +12,27 @@ import test from "ava";
 
 const commonTests = testWrapper((descriptor, setup) => {
   // WITHOUT CONTENT
-  test(`empty ${descriptor}`, t => {
+  test(`empty ${descriptor}`, (t) => {
     const { render } = setup();
     const { actual, expected } = render();
     t.is(actual, expected);
   });
 
   // WITH CONTENT
-  test(`${descriptor} with content`, t => {
+  test(`${descriptor} with content`, (t) => {
     const { actual, expected, render } = setup();
     actual.setBlock(`
       h1 Hello World
       h2 Foo Bar
     `);
-    expected.setBlock("<h1>Hello World</h1><h2>Foo Bar</h2>");
+    expected.setBlock('<h1>Hello World</h1><h2>Foo Bar</h2>');
     t.is(actual.render(), expected.render());
   });
 
   // WITH CUSTOM CLASSNAMES
-  test(`${descriptor} with custom classes`, t => {
+  test(`${descriptor} with custom classes`, (t) => {
     const { addClass, render } = setup();
-    const customClasses = ["custom", "classNames"];
+    const customClasses = ['custom', 'classNames'];
     addClass(...customClasses);
     const { actual, expected } = render();
     t.is(actual, expected);

@@ -1,60 +1,60 @@
-import commonTests from "../_commonTests";
-import colorTests from "../_colorTests";
-import sizeTests from "../_sizeTests";
-import modifierTests from "../_modifierTests";
-import { testWrapper } from "../_utils";
-import test from "ava";
+import test from 'ava';
+import commonTests from '../_commonTests';
+import colorTests from '../_colorTests';
+import sizeTests from '../_sizeTests';
+import modifierTests from '../_modifierTests';
+import { testWrapper } from '../_utils';
 
 const buttonContext = {
-  name: "button",
-  mixinPath: "/elements/button",
+  name: 'button',
+  mixinPath: '/elements/button',
   types: [
     {
-      type: "<button> type",
-      expectedTpl: '<button class="button"{{ATTRIBUTES}}>{{BLOCK}}</button>'
+      type: '<button> type',
+      expectedTpl: '<button class="button"{{ATTRIBUTES}}>{{BLOCK}}</button>',
     },
     {
-      type: "<a> type",
+      type: '<a> type',
       mixinAttributes: {
-        type: "a"
+        type: 'a',
       },
-      expectedTpl: '<a class="button"{{ATTRIBUTES}}>{{BLOCK}}</a>'
+      expectedTpl: '<a class="button"{{ATTRIBUTES}}>{{BLOCK}}</a>',
     },
     {
-      type: "<input type=submit> type",
+      type: '<input type=submit> type',
       mixinAttributes: {
-        type: "submit"
+        type: 'submit',
       },
-      expectedTpl: '<input class="button" type="submit"{{ATTRIBUTES}}/>'
+      expectedTpl: '<input class="button" type="submit"{{ATTRIBUTES}}/>',
     },
     {
-      type: "<input type=reset> type",
+      type: '<input type=reset> type',
       mixinAttributes: {
-        type: "reset"
+        type: 'reset',
       },
-      expectedTpl: '<input class="button" type="reset"{{ATTRIBUTES}}/>'
-    }
-  ]
+      expectedTpl: '<input class="button" type="reset"{{ATTRIBUTES}}/>',
+    },
+  ],
 };
 
 const buttonModifierMap = {
   // DISPLAYS
-  fullwidth: "is-fullwidth",
+  fullwidth: 'is-fullwidth',
 
   // STYLES
-  outlined: "is-outlined",
-  inverted: "is-inverted",
-  rounded: "is-rounded",
+  outlined: 'is-outlined',
+  inverted: 'is-inverted',
+  rounded: 'is-rounded',
 
   // STATES
-  hovered: "is-hovered",
-  focused: "is-focused",
-  active: "is-active",
-  loading: "is-loading",
-  static: "is-static",
+  hovered: 'is-hovered',
+  focused: 'is-focused',
+  active: 'is-active',
+  loading: 'is-loading',
+  static: 'is-static',
 
   // GROUPING
-  selected: "is-selected"
+  selected: 'is-selected',
 };
 
 commonTests(buttonContext);
@@ -67,9 +67,9 @@ modifierTests(buttonContext, buttonModifierMap);
 
 // test for disabled state seperately
 testWrapper((descriptor, setup) => {
-  test(`disabled ${descriptor}`, t => {
+  test(`disabled ${descriptor}`, (t) => {
     const { setAttribute, render } = setup();
-    setAttribute("disabled", true);
+    setAttribute('disabled', true);
     const { actual, expected } = render();
     t.is(actual, expected);
   });
