@@ -1,0 +1,13 @@
+include ../helpers
+
+mixin iconImplementation
+  #{attributes.iconType ? attributes.iconType : "i"}(class!=attributes.iconClass)
+
+mixin icon
+  - attributes = supportModifiers(attributes, [SIZES]);
+  - iconAttributes = extractAttributes(attributes, ["iconType", "iconClass"]);
+  span.icon(class!=attributes.class)
+    if block
+      block
+    else if iconAttributes.iconClass
+      +iconImplementation&attributes(iconAttributes)
