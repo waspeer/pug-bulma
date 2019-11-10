@@ -1,5 +1,4 @@
-import test from 'ava';
-import { createTestWrapper } from './_utils';
+import modifierTests from './_modifierTests';
 
 const colorMap = {
   white: 'is-white',
@@ -15,27 +14,6 @@ const colorMap = {
   text: 'is-text',
 };
 
-const colorTests = createTestWrapper((descriptor, setup) => {
-  // INDIVIDUAL COLORS
-  test(`individual colors on ${descriptor}`, (t) => {
-    Object.keys(colorMap).forEach((color) => {
-      const { actual, expected } = setup();
-      actual.setAttribute(color, true);
-      expected.addClass(colorMap[color]);
-      t.is(actual.render(), expected.render(), `${descriptor} supports color ${color}`);
-    });
-  });
-
-  // MULTIPLE COLORS
-  test(`multiple colors on ${descriptor}`, (t) => {
-    const { actual, expected } = setup();
-    const colors = Object.keys(colorMap).slice(-3);
-    colors.forEach((color) => {
-      actual.setAttribute(color, true);
-      expected.addClass(colorMap[color]);
-    });
-    t.is(actual.render(), expected.render());
-  });
-});
+const colorTests = (testContext) => modifierTests(testContext, colorMap);
 
 export default colorTests;

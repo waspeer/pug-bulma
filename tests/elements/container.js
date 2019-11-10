@@ -1,6 +1,7 @@
 import commonTests from '../_commonTests';
+import modifierTests from '../_modifierTests';
 
-commonTests({
+const containerContext = {
   name: 'container',
   mixinPath: '/elements/container',
   types: [
@@ -8,10 +9,12 @@ commonTests({
       type: 'generic',
       expectedTpl: '<div class="container">{{BLOCK}}</div>',
     },
-    {
-      type: 'fluid',
-      mixinAttributes: { fluid: true },
-      expectedTpl: '<div class="container is-fluid">{{BLOCK}}</div>',
-    },
   ],
-});
+};
+
+const containerModifierMap = {
+  fluid: 'is-fluid',
+};
+
+commonTests(containerContext);
+modifierTests(containerContext, containerModifierMap);

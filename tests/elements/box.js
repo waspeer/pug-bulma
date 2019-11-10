@@ -1,6 +1,6 @@
 import commonTests from '../_commonTests';
 
-commonTests({
+const boxContext = {
   name: 'box',
   mixinPath: '/elements/box',
   types: [
@@ -9,4 +9,6 @@ commonTests({
       expectedTpl: '<div class="box">{{BLOCK}}</div>',
     },
   ],
-});
+};
+
+commonTests(boxContext);

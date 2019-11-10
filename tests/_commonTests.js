@@ -32,8 +32,7 @@ const commonTests = createTestWrapper((descriptor, setup) => {
   // WITH CUSTOM CLASSNAMES
   test(`${descriptor} with custom classes`, (t) => {
     const { addClass, render } = setup();
-    const customClasses = ['custom', 'classNames'];
-    addClass(...customClasses);
+    addClass('custom', 'classNames');
     const { actual, expected } = render();
     t.is(actual, expected);
   });

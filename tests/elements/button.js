@@ -58,11 +58,8 @@ const buttonModifierMap = {
 };
 
 commonTests(buttonContext);
-
 colorTests(buttonContext);
-
 sizeTests(buttonContext);
-
 modifierTests(buttonContext, buttonModifierMap);
 
 // test for disabled state seperately

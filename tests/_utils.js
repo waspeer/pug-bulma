@@ -22,9 +22,7 @@ function normalizePugString(string) {
 // normalize html string so html rendered by pug and expected html string
 // can be compared
 function normalizeHtmlString(htmlString) {
-  let newHtmlString = htmlString;
-
-  newHtmlString = newHtmlString
+  return htmlString
     // sort class attribute
     .replace(/class="([^"]*)"/, (match, classList) => {
       const newClassList = classList.split(' ').sort().join(' ');
@@ -35,8 +33,6 @@ function normalizeHtmlString(htmlString) {
       const unsortedAttributes = htmlString.match(/<([^>]*)>/)[0].match(/(\s\w*(?:="[^"]*")?)/g);
       return unsortedAttributes === null ? attributes : unsortedAttributes.sort().join('');
     });
-
-  return newHtmlString;
 }
 
 /*
