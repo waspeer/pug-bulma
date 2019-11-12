@@ -1,7 +1,7 @@
 import test from 'ava';
 import commonTests from '../_commonTests';
 import sizeTests from '../_sizeTests';
-import { createTestWrapper } from '../_utils';
+import { runTests } from '../_utils';
 
 const name = 'icon';
 const mixinPath = '/elements/icon';
@@ -43,7 +43,7 @@ const implIconContext = {
   ],
 };
 
-createTestWrapper((descriptor, setup) => {
+runTests((descriptor, setup) => {
   test(descriptor, (t) => {
     const { actual, expected } = setup();
     actual.setAttribute('iconClass', 'fas fa-info-circle');
@@ -60,4 +60,4 @@ createTestWrapper((descriptor, setup) => {
       'Block content should override default icon implementations',
     );
   });
-})(implIconContext);
+}, implIconContext);

@@ -3,7 +3,7 @@ import commonTests from '../_commonTests';
 import colorTests from '../_colorTests';
 import sizeTests from '../_sizeTests';
 import modifierTests from '../_modifierTests';
-import { createTestWrapper } from '../_utils';
+import { runTests } from '../_utils';
 
 const buttonContext = {
   name: 'button',
@@ -63,11 +63,11 @@ sizeTests(buttonContext);
 modifierTests(buttonContext, buttonModifierMap);
 
 // test for disabled state seperately
-createTestWrapper((descriptor, setup) => {
+runTests((descriptor, setup) => {
   test(`disabled ${descriptor}`, (t) => {
     const { setAttribute, render } = setup();
     setAttribute('disabled', true);
     const { actual, expected } = render();
     t.is(actual, expected);
   });
-})(buttonContext);
+}, buttonContext);

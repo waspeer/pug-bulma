@@ -12,9 +12,7 @@ function normalizePugString(string) {
   const firstLineIndex = lines[0] === '' ? 1 : 0;
   const tabLength = lines[firstLineIndex].match(/^[\t\s]*/g)[0].length;
   return lines
-    .map((line) => {
-      return line.length < tabLength ? line : line.slice(tabLength);
-    })
+    .map((line) => (line.length < tabLength ? line : line.slice(tabLength)))
     .join('\n')
     .trim();
 }
@@ -160,12 +158,10 @@ export function createTestWrapper(tests) {
             actual.setAttribute(attribute, value);
             expected.setAttribute(attribute, value);
           },
-          render: () => {
-            return {
-              actual: actual.render(),
-              expected: expected.render(),
-            }
-          },
+          render: () => ({
+            actual: actual.render(),
+            expected: expected.render(),
+          }),
           actual,
           expected,
         };
@@ -174,4 +170,8 @@ export function createTestWrapper(tests) {
       tests(descriptor, setup);
     });
   };
+}
+
+export function runTests(tests, context) {
+  createTestWrapper(tests)(context);
 }
