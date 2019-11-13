@@ -35,7 +35,7 @@ mixin image
   - imageAttributes = extractAttributes(attributes, ["src", "rounded"]);
   - attributes = supportModifiers(attributes, [imageModifierMap]);
   figure.image&attributes(attributes)
-    if imageAttributes.src
-      img(src!=imageAttributes.src class=imageAttributes.rounded ? "is-rounded" : "")
-    else
+    if block
       block
+    else if imageAttributes.src
+      img(src!=imageAttributes.src class=imageAttributes.rounded ? "is-rounded" : "")

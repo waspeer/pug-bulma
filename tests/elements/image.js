@@ -79,3 +79,17 @@ runTests((descriptor, setup) => {
     t.is(actual.render(), expected.render());
   });
 }, implImageContext);
+
+// BLOCK OVERRIDES DEFAULT IMPLEMENTATION
+runTests((descriptor, setup) => {
+  test(`${name}: block overrides default implementation`, (t) => {
+    const { setAttribute, setBlock, render } = setup();
+    setAttribute('value', 0.2);
+    setBlock({
+      pug: 'span i am important',
+      html: '<span>i am important</span>',
+    });
+    const { actual, expected } = render();
+    t.is(actual, expected);
+  });
+}, imageContext);
