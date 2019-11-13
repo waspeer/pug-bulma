@@ -36,6 +36,16 @@ const commonTests = createTestWrapper((descriptor, setup) => {
     const { actual, expected } = render();
     t.is(actual, expected);
   });
+
+  // WITH CUSTOM ATTRIBUTES
+  test(`${descriptor} with custom attributes`, (t) => {
+    const { setAttribute, render } = setup();
+    setAttribute('id', 'customId');
+    setAttribute('sick', true);
+    setAttribute('swag', 100);
+    const { actual, expected } = render();
+    t.is(actual, expected);
+  });
 });
 
 export default commonTests;
