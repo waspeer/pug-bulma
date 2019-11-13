@@ -11,28 +11,28 @@ const buttonContext = {
   types: [
     {
       type: '<button> type',
-      expectedTpl: '<button class="button"{{ATTRIBUTES}}>{{BLOCK}}</button>',
+      expectedTpl: '<button class="button">{{BLOCK}}</button>',
     },
     {
       type: '<a> type',
       mixinAttributes: {
         type: 'a',
       },
-      expectedTpl: '<a class="button"{{ATTRIBUTES}}>{{BLOCK}}</a>',
+      expectedTpl: '<a class="button">{{BLOCK}}</a>',
     },
     {
       type: '<input type=submit> type',
       mixinAttributes: {
         type: 'submit',
       },
-      expectedTpl: '<input class="button" type="submit"{{ATTRIBUTES}}/>',
+      expectedTpl: '<input class="button" type="submit"/>',
     },
     {
       type: '<input type=reset> type',
       mixinAttributes: {
         type: 'reset',
       },
-      expectedTpl: '<input class="button" type="reset"{{ATTRIBUTES}}/>',
+      expectedTpl: '<input class="button" type="reset"/>',
     },
   ],
 };

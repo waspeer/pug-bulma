@@ -96,7 +96,6 @@ function createActualRenderer(mixinName, mixinPath, mixinTypeAttributes = {}) {
 // tested with the specified classes and content
 function createExpectedRenderer(expectedTpl) {
   const BLOCK_PLACEHOLDER = '{{BLOCK}}';
-  const ATTRIBUTES_PLACEHOLDER = '{{ATTRIBUTES}}';
 
   const renderStrategy = (properties) => {
     const { classes, block, attributes } = properties;
@@ -110,7 +109,7 @@ function createExpectedRenderer(expectedTpl) {
       .filter((attributeString) => attributeString !== false)
       .join(' ');
 
-    const htmlString = expectedTpl
+    let htmlString = expectedTpl
       .replace(/class="([^"]*)"/, (match, classList) => {
         const newClassList = classList
           .split('\n')
@@ -118,8 +117,11 @@ function createExpectedRenderer(expectedTpl) {
           .join(' ');
         return `class="${newClassList}"`;
       })
-      .replace(BLOCK_PLACEHOLDER, block)
-      .replace(ATTRIBUTES_PLACEHOLDER, attributesString.length ? ` ${attributesString}` : '');
+      .replace(BLOCK_PLACEHOLDER, block);
+    const newAttributesIndex = htmlString.search(/"\/?>/) + 1;
+    htmlString = htmlString.slice(0, newAttributesIndex)
+      + (attributesString.length ? ` ${attributesString}` : '')
+      + htmlString.slice(newAttributesIndex);
 
     return normalizeHtmlString(htmlString);
   };
