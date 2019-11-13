@@ -1,0 +1,6 @@
+include ../helpers
+
+mixin notification
+  - attributes = supportModifiers(attributes, [COLORS]);
+  .notification&attributes(attributes)
+    block

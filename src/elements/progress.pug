@@ -1,0 +1,15 @@
+include ../helpers
+
+-
+  const progressModifierMap = {
+    
+  }
+
+mixin progress
+  - settings = extractAttributes(attributes, []);
+  - attributes = supportModifiers(attributes, [SIZES, COLORS]);
+  progress.progress&attributes(attributes)
+    if block
+      block
+    else if attributes.value
+      | #{attributes.value * (attributes.max ? (100 / attributes.max) : 100)}%

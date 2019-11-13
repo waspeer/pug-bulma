@@ -1,0 +1,6 @@
+include ../helpers
+
+mixin delete
+  - attributes = supportModifiers(attributes, [SIZES]);
+  .delete&attributes(attributes)
+    block
