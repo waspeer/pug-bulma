@@ -1,0 +1,12 @@
+include ../helpers
+
+-
+  const ELEMENTModifierMap = {
+    
+  }
+
+mixin ELEMENT
+  - settings = extractAttributes(attributes, []);
+  - attributes = supportModifiers(attributes, [ELEMENTModifierMap]);
+  .ELEMENT&attributes(attributes)
+    block
